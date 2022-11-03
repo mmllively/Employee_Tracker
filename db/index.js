@@ -59,9 +59,61 @@ function startQuestions() {
       });
       
    }
+
+   function  viewRoles() {
+
+    db.query('SELECT id, title, salary, department_id FROM role', function (err, results) {
+        if (err){
+            throw err;
+        }console.table(results);
+        startQuestions();
+      });
+      
+   }
+
+
+   function  viewEmployees() {
+
+    db.query('SELECT id, first_name, last_name, role_id, manager_id FROM employee', function (err, results) {
+        if (err){
+            throw err;
+        }console.table(results);
+        startQuestions();
+      });
+      
+   }
     
     
+   function addDept() {
+    inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "What is the name of the department?",
+        name: "name",
+      },
     
+    ])
+    .then((answer) => {
+        const sql = `INSERT INTO department (name) VALUES (?)`;
+        const params = [answer.name];
+
+        db.query(sql, params, function (err, results) {
+            if (err){
+                throw err;
+            }console.table(results);
+            startQuestions();
+          });
+        });
+  
+    
+
+
+
+     
+   
+      
+   }
     
     
     

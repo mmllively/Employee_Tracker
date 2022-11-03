@@ -238,7 +238,19 @@ console.log(results);
           name: updateEmployee.first_name + " " + updateEmployee.last_name,
           value: updateEmployee.id
         }
-      })
+      });
+
+      db.query("SELECT * FROM employee", function (err, results){
+        if (err){
+          throw err;
+        }
+        let employeeRoleChoices = results.map((updateRoleEmployee)=>{
+          return {
+            name: updateRoleEmployee.title,
+            value: updateRoleEmployee.id
+          }
+        });
+      
    
     inquirer
     .prompt([
@@ -246,14 +258,16 @@ console.log(results);
         type: "list",
         message: "Which employee would you like to update?",
         name: "update",
-        choice: 
+        choices: employeeChoices,
       },
 
       {
         type: "list",
         message: "What is their new role?",
         name: "role",
+        choices: employeeRoleChoices,
       },
+
     
     ])
     .then((answer) => {
@@ -266,16 +280,11 @@ console.log(results);
             startQuestions();
           });
         });
+      });
         });
+      }
 
-    //   const sql2 = `UPDATE *, `
 
-    // db.query('UPDATE *, first_name, last_name, role_id, manager_id SET employee WHERE', function (err, results) {
-    //     if (err){
-    //         throw err;
-    //     }console.table(results);
-    //     startQuestions();
-    //   });
       
-   }
+   
    

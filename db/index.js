@@ -111,6 +111,18 @@ function startQuestions() {
     
 
    function addRole() {
+    db.query("SELECT * FROM department", function (err, results){
+      if (err){
+        throw err;
+    }
+console.log(results);
+    let departmentChoices = results.map((department)=>{
+      return {
+        name: department.name,
+        value: department.id
+      }
+    }) 
+    console.log(departmentChoices);
     inquirer
     .prompt([
       {
@@ -124,16 +136,18 @@ function startQuestions() {
         name: "salary",
       },
       {
-        type: "input",
+        type: "list",
         message: "What is the name of the department for this role?",
-        name: "department_name",
+        name: "department_id",
+        choices: departmentChoices,
       },
     
     
     ])
     .then((answer) => {
-        const sqlR = `INSERT INTO role (name) VALUES (?)`;
-        const paramsR = [answer.role_name, answer.salary, answer.department_name];
+      console.log(answer);
+        const sqlR = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`;
+        const paramsR = [answer.role_name, answer.salary, answer.department_id];
 
         db.query(sqlR, paramsR, function (err, results) {
             if (err){
@@ -142,11 +156,35 @@ function startQuestions() {
             startQuestions();
           });
         });
-      
+      });
    }
 
 
    function addEmployee() {
+    db.query("SELECT * FROM role", function (err, results){
+      if (err){
+        throw err;
+      }
+      let roleChoices = results.map((role)=>{
+        return {
+          name: role.title,
+          value: role.id
+        }
+      });
+
+      db.query("SELECT * FROM employee", function (err, results){
+        if (err){
+          throw err;
+        }
+        let managerChoices = results.map((manager)=>{
+          return {
+            name: manager.first_name + " " + manager.last_name,
+            value: manager.id
+          }
+        })
+      
+   
+
     inquirer
     .prompt([
       {
@@ -160,20 +198,23 @@ function startQuestions() {
         name: "lastname",
       },
       {
-        type: "input",
+        type: "list",
         message: "What is their role?",
         name: "role",
+        choices: roleChoices,
       },
       {
-        type: "input",
+        type: "list",
         message: "Who is their manager?",
         name: "manager",
+        choices: managerChoices,
       },
     
     
     ])
     .then((answer) => {
-        const sqlE = `INSERT INTO employee (name) VALUES (?)`;
+      console.log(answer);
+        const sqlE = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
         const paramsE = [answer.firstname, answer.lastname, answer.role, answer.manager];
 
         db.query(sqlE, paramsE, function (err, results) {
@@ -183,45 +224,48 @@ function startQuestions() {
             startQuestions();
           });
         });
-      
+      });
+    });
    }
-
-
-
-
-
-
-
-
-
-
     
    function  updateEmployee() {
+    db.query("SELECT * FROM employee", function (err, results){
+      if (err){
+        throw err;
+      }
+      let employeeChoices = results.map((updateEmployee)=>{
+        return {
+          name: updateEmployee.first_name + " " + updateEmployee.last_name,
+          value: updateEmployee.id
+        }
+      })
+   
     inquirer
     .prompt([
       {
-        type: "input",
+        type: "list",
         message: "Which employee would you like to update?",
         name: "update",
+        choice: 
       },
 
       {
-        type: "input",
+        type: "list",
         message: "What is their new role?",
         name: "role",
       },
     
     ])
     .then((answer) => {
-        const sql2 = `UPDATE employee SET WHERE VALUES (?)`;
-        const params2 = [answer.name];
+        const sql2 = `UPDATE employee SET role_id = ${answer.role} WHERE employee.id = ${answer.update}`;
 
-        db.query(sql2, params2, function (err, results) {
+        db.query(sql2, function (err, results) {
             if (err){
                 throw err;
             }console.table(results);
             startQuestions();
           });
+        });
         });
 
     //   const sql2 = `UPDATE *, `
